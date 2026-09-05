@@ -1,0 +1,55 @@
+{%- if tools and (messages|length == 0 or messages[0]['role'] != 'system') %}
+{{- '<|im_start|>system\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nFunction signatures are provided inside <tools></tools> tags:\n<tools>\n' }}
+{%- for tool in tools %}
+{{- tool | tojson }}{{- '\n' }}
+{%- endfor %}
+{{- '</tools>\n\nReturn each function call as JSON inside <tool_call></tool_call> tags.<|im_end|>\n' }}
+{%- endif %}
+{%- for message in messages %}
+{%- set role = message['role'] %}
+{%- set content = message['content'] if message['content'] is string else '' %}
+{%- if role == 'assistant' %}
+{{- '<|im_start|>assistant\n' }}
+{%- if message.get('reasoning_content') is string and message.get('reasoning_content') %}
+{{- '<think>\n' + message['reasoning_content'].strip('\n') + '\n</think>\n\n' }}
+{%- endif %}
+{{- content.lstrip('\n') }}
+{%- if message.get('tool_calls') %}
+{%- for raw_call in message['tool_calls'] %}
+{%- set call = raw_call['function'] if raw_call.get('function') else raw_call %}
+{%- if content or not loop.first %}{{- '\n' }}{%- endif %}
+{{- '<tool_call>\n{"name": ' + (call['name'] | tojson) + ', "arguments": ' }}
+{%- if call['arguments'] is string %}
+{{- call['arguments'] }}
+{%- else %}
+{{- call['arguments'] | tojson }}
+{%- endif %}
+{{- '}\n</tool_call>' }}
+{%- endfor %}
+{%- endif %}
+{{- '<|im_end|>\n' }}
+{%- elif role == 'tool' %}
+{{- '<|im_start|>tool\n<tool_response>\n' + content + '\n</tool_response><|im_end|>\n' }}
+{%- elif role == 'system' %}
+{{- '<|im_start|>system\n' + content }}
+{%- if tools and loop.first %}
+{%- if content %}{{- '\n\n' }}{%- endif %}
+{{- '# Tools\n\nYou may call one or more functions to assist with the user query.\n\nFunction signatures are provided inside <tools></tools> tags:\n<tools>\n' }}
+{%- for tool in tools %}
+{{- tool | tojson }}{{- '\n' }}
+{%- endfor %}
+{{- '</tools>\n\nReturn each function call as JSON inside <tool_call></tool_call> tags.' }}
+{%- endif %}
+{{- '<|im_end|>\n' }}
+{%- else %}
+{{- '<|im_start|>' + role + '\n' + content + '<|im_end|>\n' }}
+{%- endif %}
+{%- endfor %}
+{%- if add_generation_prompt %}
+{{- '<|im_start|>assistant\n' }}
+{%- if open_thinking is defined and open_thinking %}
+{{- '<think>\n' }}
+{%- else %}
+{{- '<think>\n\n</think>\n\n' }}
+{%- endif %}
+{%- endif %}

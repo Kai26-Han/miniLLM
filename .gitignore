@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.egg-info/
+
+# Training artifacts
+*.pt
+*.pth
+*.safetensors
+runs/
+checkpoints/

@@ -1,0 +1,102 @@
+{
+  "name": "miniLLM-tokenizer",
+  "created_at": "2026-09-01T03:46:10.522630+00:00",
+  "algorithm": "ByteLevel-BPE",
+  "vocab_size": 8192,
+  "min_frequency": 2,
+  "min_chars": 20,
+  "chunk_chars": 20000,
+  "max_documents": 0,
+  "input_files": [
+    "/root/miniLLM/dataset/tokenizer/cci3_hq_zh_450mb.jsonl",
+    "/root/miniLLM/dataset/tokenizer/fineweb2_zh_1_5gb.jsonl",
+    "/root/miniLLM/dataset/tokenizer/fineweb_en_300mb.jsonl",
+    "/root/miniLLM/dataset/tokenizer/stack_smol_code_150mb.jsonl",
+    "/root/miniLLM/dataset/tokenizer/wikipedia_zh_600mb.jsonl"
+  ],
+  "corpus_stats": {
+    "documents_seen": 949239,
+    "documents_used": 949239,
+    "chunks_yielded": 956177,
+    "characters_yielded": 1375851167,
+    "empty_or_short_skipped": 0,
+    "invalid_json_skipped": 0,
+    "unsupported_rows_skipped": 0
+  },
+  "validation": {
+    "vocab_size": 8192,
+    "token_ids": {
+      "<|endoftext|>": 0,
+      "<|im_start|>": 1,
+      "<|im_end|>": 2,
+      "<think>": 3,
+      "</think>": 4,
+      "<tool_call>": 5,
+      "</tool_call>": 6,
+      "<tool_response>": 7,
+      "</tool_response>": 8,
+      "<|reserved_0|>": 9,
+      "<|reserved_1|>": 10,
+      "<|reserved_2|>": 11,
+      "<|reserved_3|>": 12,
+      "<|reserved_4|>": 13,
+      "<|reserved_5|>": 14,
+      "<|reserved_6|>": 15,
+      "<|reserved_7|>": 16,
+      "<|reserved_8|>": 17,
+      "<|reserved_9|>": 18,
+      "<|reserved_10|>": 19,
+      "<|reserved_11|>": 20,
+      "<|reserved_12|>": 21,
+      "<|reserved_13|>": 22,
+      "<|reserved_14|>": 23,
+      "<|reserved_15|>": 24
+    },
+    "roundtrip_tests": [
+      {
+        "text": "你好，世界！miniLLM 从零开始训练。",
+        "tokens": 15,
+        "characters_per_token": 1.4,
+        "roundtrip_exact": true
+      },
+      {
+        "text": "Byte-level BPE keeps English, numbers 12.5%, and punctuation.",
+        "tokens": 30,
+        "characters_per_token": 2.0333,
+        "roundtrip_exact": true
+      },
+      {
+        "text": "Python 示例：\ndef add(a, b):\n    return a + b",
+        "tokens": 21,
+        "characters_per_token": 2.0,
+        "roundtrip_exact": true
+      },
+      {
+        "text": "中英混合：Transformer 使用 attention 处理上下文。",
+        "tokens": 17,
+        "characters_per_token": 2.1176,
+        "roundtrip_exact": true
+      },
+      {
+        "text": "生僻字与 emoji：𠮷野家 🙂🚀",
+        "tokens": 25,
+        "characters_per_token": 0.68,
+        "roundtrip_exact": true
+      },
+      {
+        "text": "空白测试：第一行\n    第二行\tTab",
+        "tokens": 13,
+        "characters_per_token": 1.5385,
+        "roundtrip_exact": true
+      }
+    ],
+    "chat_template_example": "<|im_start|>system\n你是 miniLLM 助手。<|im_end|>\n<|im_start|>user\n什么是 BPE？<|im_end|>\n<|im_start|>assistant\nBPE 是一种子词切分算法。<|im_end|>\n"
+  },
+  "artifact_sha256": {
+    "tokenizer.json": "e185a8dd405fd2093d74b326ad6036202ab12a21b9b5d977655838ba85b26c90",
+    "vocab.json": "ddb0ff4cc859e018fe48a49afa191d791b024d848043db92adf5c89b6fc32feb",
+    "merges.txt": "67d18e6c032086d468b3cf97da663be717fd97efbc53fa68ed20d1425dd94f56",
+    "chat_template.jinja": "09800cca57edb7dabdd79e7774e8e5981861de507060da73b9d899c287f40e7b",
+    "tokenizer_config.json": "fbc6984c837c409448263696ff50e32abb0dbdaf9c36f5225c1a7f3fc6213213"
+  }
+}

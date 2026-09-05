@@ -1,0 +1,26 @@
+# Tokenizer training and evaluation (Python 3.10+)
+tokenizers>=0.20,<1.0
+# Qwen3 distillation needs 4.51+, while InternLM2-Reward's legacy remote code
+# predates the explicit-cache refactor introduced in Transformers 4.56.
+transformers>=4.51,<4.56
+jinja2>=3.1,<4.0
+
+# Streaming and sampling public tokenizer corpora
+datasets>=3.0,<5.0
+
+# miniLLM pretraining and evaluation
+# On AutoDL, keep the CUDA-compatible PyTorch supplied by the image. If torch
+# is missing, install the wheel matching that server's CUDA version first.
+torch>=2.5,<3.0
+numpy>=1.26
+tqdm>=4.66
+safetensors>=0.4
+psutil>=5.9
+
+# PPO/GRPO external reward-model runtime (InternLM2-1.8B-Reward)
+sentencepiece>=0.2,<1.0
+einops>=0.8,<1.0
+
+# Optional experiment monitoring backends selected by --tracker
+swanlab>=0.9.5,<1.0
+wandb>=0.19
