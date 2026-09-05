@@ -122,7 +122,6 @@ GRPO 使用同一 Prompt 的多个候选回答构造组内相对优势，不依�
 
 - [中文学习资料](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/)
 - [English Learning Materials](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/README.md)
-- [数据集说明](dataset/dataset.md)
 
 ## 🗂️ 仓库导航
 
