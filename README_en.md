@@ -122,7 +122,6 @@ If this is your first time studying language models, the recommended order is:
 
 - [Chinese Learning Materials](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/)
 - [English Learning Materials](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/README.md)
-- [Dataset Notes](dataset/dataset.md)
 
 ## 🗂️ Repository Guide
 
