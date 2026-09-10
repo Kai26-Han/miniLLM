@@ -4,6 +4,8 @@
 
 ### 在 miniLLM Base 上训练视觉语言模型
 
+中文 | [English](README_en.md)
+
 [返回 miniLLM 主项目](../README.md)
 
 🚀 [**在线体验已训练的 miniLLM-vlm**](https://www.modelscope.cn/studios/kayson2026/miniLLM-vlm)
