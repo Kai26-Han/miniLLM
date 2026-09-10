@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+cache/
+checkpoints/
+out/
+model/miniLLM-base/
+model/siglips/
+dataset/*.parquet

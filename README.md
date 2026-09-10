@@ -9,6 +9,8 @@
 
 🚀 [**在线体验 miniLLM 模型**](https://www.modelscope.cn/studios/kayson2026/miniLLM)
 
+👁️ [**在线体验 miniLLM-vlm 视觉模型**](https://www.modelscope.cn/studios/kayson2026/miniLLM-vlm)
+
 </div>
 
 ---
@@ -17,7 +19,7 @@
 
 miniLLM 是一个面向 LLM 入门、实验与原理学习的项目。
 
-希望把语言模型从“可以调用的黑盒”变成“可以逐层理解的工程系统”：从原始语料和 Tokenizer 开始，经过预训练、指令微调、偏好对齐和工具使用，最终走完一个现代语言模型的主要生命周期。
+希望把语言模型从“可以调用的黑盒”变成“可以逐层理解的工程系统”：从原始语料和 Tokenizer 开始，经过预训练、指令微调、偏好对齐、工具使用和视觉扩展，逐步理解现代语言模型与多模态模型的主要生命周期。
 
 项目不只提供训练脚本，还配套了中英文原理文章和实战资料，希望让每一个训练阶段都能被阅读、复现、比较和扩展。
 
@@ -26,6 +28,7 @@ miniLLM 是一个面向 LLM 入门、实验与原理学习的项目。
 - 可从零训练的 8,192 词表 ByteLevel-BPE Tokenizer
 - 由 RMSNorm、RoPE、GQA 和 SwiGLU 组成的 Decoder-only Transformer
 - Dense 与稀疏 MoE 两种结构，默认使用 4 Experts / Top-1 路由
+- 基于 miniLLM Base 和 SigLIP 视觉编码器扩展的 miniLLM-vlm
 - 预训练、全参数 SFT、LoRA 和离线黑盒蒸馏
 - DPO、PPO、GRPO 以及多轮 Agentic RL
 - 断点续训、混合精度、梯度累积、梯度检查点和编译优化
@@ -63,6 +66,7 @@ miniLLM 是一个自回归 Decoder-only Causal Language Model。模型默认采�
 | Tokenizer | 将文本映射为稳定的 Token ID | ByteLevel-BPE 词表与对话模板 |
 | Pretraining | 通过下一 Token 预测学习语言分布 | 基础语言模型 |
 | SFT / LoRA / Distillation | 学习指令遵循和对话能力 | 指令模型或 LoRA Adapter |
+| VLM Pretrain / SFT | 对齐视觉与语言表示，学习图像理解与图文对话 | miniLLM-vlm 视觉语言模型 |
 | DPO | 从偏好对中学习更优回答 | 偏好对齐模型 |
 | PPO / GRPO | 利用 Reward 信号进行在线策略优化 | 强化学习模型 |
 | Agentic RL | 在多轮环境中学习工具使用 | Agentic 策略模型 |
@@ -103,9 +107,35 @@ PPO 路线包含 Actor、Critic、Reward、GAE 和裁剪目标，适合学习完
 
 GRPO 使用同一 Prompt 的多个候选回答构造组内相对优势，不依赖独立 Critic。项目还在此基础上提供多轮 Agentic RL，用于学习工具调用与环境交互。
 
+## 👁️ miniLLM-vlm 视觉语言模型
+
+[miniLLM-vlm](miniLLM-vlm/) 是在已训练 miniLLM Base 上扩展的视觉语言模型。它使用 SigLIP 将 256 × 256 图像编码为 64 个视觉 Token，再通过 LayerNorm、Linear、GELU 和 Linear 组成的 Projector，将视觉特征映射到 miniLLM 的语言嵌入空间。这种设计复用已有视觉与语言能力，重点学习两种模态之间的连接。
+
+项目是一个可独立运行的子项目，包含自己的模型定义、数据处理、训练器、评估入口和中英文学习资料。它面向单图理解，不扩充 Tokenizer 词表，而是复用保留 Token 作为连续的图像占位。
+
+### 视觉 Pretrain
+
+视觉 Pretrain 使用单图描述数据建立图像与文本的基础对齐。此阶段冻结 SigLIP 视觉编码器和 miniLLM Base，只训练 Projector；答案误差仍会穿过语言模型反向传播到 Projector，从而让映射后的视觉特征逐步适应语言模型。
+
+![miniLLM-vlm Pretrain 训练曲线](miniLLM-vlm/images/pretrain.png)
+
+### 视觉 SFT
+
+视觉 SFT 从 Pretrain 产物继续训练，覆盖单图问答、多轮图文对话和纯文本指令。默认保持 SigLIP 冻结，同时训练 Projector 以及 miniLLM 第一层和最后一层 Decoder Block，在视觉指令跟随与原有语言能力之间取得平衡。
+
+![miniLLM-vlm SFT 训练曲线](miniLLM-vlm/images/sft.png)
+
+评估流程支持单图描述、视觉问答、多轮消息和纯文本推理，并会通过正确图像与错配图像的损失差异，辅助判断模型是否真正使用了视觉信息。
+
+🚀 [**在 ModelScope 体验 miniLLM-vlm**](https://www.modelscope.cn/studios/kayson2026/miniLLM-vlm)
+
+- [miniLLM-vlm 项目说明](miniLLM-vlm/README.md)
+- [miniLLM-vlm 中文学习资料](miniLLM-vlm/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/)
+- [miniLLM-vlm English Learning Materials](miniLLM-vlm/learning-materials-en/)
+
 ## 📚 数据与学习资料
 
-仓库不直接携带大型训练数据和模型权重。数据需按照各阶段格式放入 dataset 目录：预训练使用文本 JSONL，SFT 使用多轮对话，DPO 使用偏好对，PPO / GRPO 使用待生成回答的 Prompt 对话。
+仓库不直接携带大型训练数据和模型权重。数据需按照各阶段格式放入对应的 dataset 目录：语言预训练使用文本 JSONL，SFT 使用多轮对话，DPO 使用偏好对，PPO / GRPO 使用待生成回答的 Prompt 对话；VLM 使用包含图像与对话的 Parquet 数据。
 
 📦 **数据集下载：**
 
@@ -119,6 +149,7 @@ GRPO 使用同一 Prompt 的多个候选回答构造组内相对优势，不依�
 3. 理解 Dense、MoE 以及常见优化方法。
 4. 进入预训练、SFT 和 RL 算法。
 5. 结合实战文档完成各阶段实验。
+6. 在 miniLLM Base 上进一步学习视觉语言对齐与视觉 SFT。
 
 - [中文学习资料](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/)
 - [English Learning Materials](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/README.md)
@@ -133,6 +164,7 @@ GRPO 使用同一 Prompt 的多个候选回答构造组内相对优势，不依�
 | [eval](eval/) | Tokenizer 和模型评估 |
 | [scripts](scripts/) | 语料抽取、蒸馏数据生成、数据验证和 LoRA 合并 |
 | [images](images/) | 项目和训练阶段示意图 |
+| [miniLLM-vlm](miniLLM-vlm/) | 基于 miniLLM Base 的视觉语言模型、训练、评估与学习资料 |
 
 ## 🧪 实验建议
 
@@ -142,15 +174,12 @@ GRPO 使用同一 Prompt 的多个候选回答构造组内相对优势，不依�
 - PPO 和 GRPO 默认需要额外的 Reward Model 资源，应根据显存调整训练规模。
 - 小模型的结果对数据质量和超参数很敏感，请优先做可复现的对照实验。
 
-## 🤝 贡献
-
-欢迎通过 Issue 提交问题、建议和实验结果，也欢迎通过 Pull Request 改进代码、文档与数据流程。如果变更会影响模型结构、Tokenizer 或训练行为，请同时说明复现方式和兼容性影响。
-
 ## 🙏 致谢
 
-miniLLM 的构建离不开开源社区的知识与实践。特别感谢以下项目：
+特别感谢以下项目：
 
 - [MiniMind](https://github.com/jingyaogong/minimind) —— 为轻量级语言模型的全流程训练、数据处理、偏好对齐与工程组织提供了重要参考。
+- [MiniMind-V](https://github.com/jingyaogong/minimind-v) —— 为在轻量语言模型上接入视觉编码器、进行跨模态对齐和视觉 SFT 提供了重要参考。
 - [nanoGPT](https://github.com/karpathy/nanoGPT) —— 以简洁、透明的方式展示 GPT 训练与微调，持续启发了“通过可读代码理解模型”的项目理念。
 
 同时感谢 PyTorch、Hugging Face Transformers、Hugging Face Datasets 以及所有开源数据和研究成果的贡献者。

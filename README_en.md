@@ -9,6 +9,8 @@
 
 🚀 [**Try the miniLLM model online**](https://www.modelscope.cn/studios/kayson2026/miniLLM)
 
+👁️ [**Try the miniLLM-vlm vision model online**](https://www.modelscope.cn/studios/kayson2026/miniLLM-vlm)
+
 </div>
 
 ---
@@ -17,7 +19,7 @@
 
 miniLLM is a language-model project for learning, research, and hands-on experimentation.
 
-hope to turn language models from black boxes that can merely be called into engineering systems that can be understood layer by layer. The project starts with raw corpora and tokenization, then progresses through pretraining, instruction tuning, preference alignment, reinforcement learning, and tool use.
+The project aims to turn language models from black boxes that can merely be called into engineering systems that can be understood layer by layer. It starts with raw corpora and tokenization, then progresses through pretraining, instruction tuning, preference alignment, reinforcement learning, tool use, and visual extensions, covering the main lifecycles of modern language and multimodal models.
 
 miniLLM pairs its implementation with Chinese and English theory articles and practical guides. Every training stage is intended to be readable, reproducible, comparable, and extensible.
 
@@ -26,6 +28,7 @@ miniLLM pairs its implementation with Chinese and English theory articles and pr
 - An 8,192-token ByteLevel-BPE tokenizer that can be trained from scratch
 - A decoder-only Transformer built with RMSNorm, RoPE, GQA, and SwiGLU
 - Dense and sparse MoE variants, with 4-expert Top-1 routing as the default
+- miniLLM-vlm, a visual extension built from the miniLLM Base model and a SigLIP vision encoder
 - Pretraining, full-parameter SFT, LoRA, and offline black-box distillation
 - DPO, PPO, GRPO, and multi-turn Agentic RL
 - Checkpoint resume, mixed precision, gradient accumulation, gradient checkpointing, and compilation
@@ -63,6 +66,7 @@ The maximum position configuration only defines the position-index range accepte
 | Tokenizer | Map text to stable token IDs | ByteLevel-BPE vocabulary and chat template |
 | Pretraining | Learn language distributions through next-token prediction | Base language model |
 | SFT / LoRA / Distillation | Learn instruction following and conversation | Instruction model or LoRA adapter |
+| VLM Pretrain / SFT | Align visual and language representations and learn image understanding and visual dialogue | miniLLM-vlm vision-language model |
 | DPO | Learn preferred responses from comparison pairs | Preference-aligned model |
 | PPO / GRPO | Optimize the policy with reward signals | Reinforcement-learning model |
 | Agentic RL | Learn tool use in multi-turn environments | Agentic policy model |
@@ -103,9 +107,35 @@ The PPO path includes the actor, critic, reward, GAE, and clipped objectives, pr
 
 GRPO constructs relative advantages from multiple candidate answers to the same prompt without requiring a separate critic. The project also extends this approach to multi-turn Agentic RL for tool use and environment interaction.
 
+## 👁️ miniLLM-vlm Vision-Language Model
+
+[miniLLM-vlm](miniLLM-vlm/) extends the trained miniLLM Base model with visual understanding. It encodes 256 × 256 images into 64 visual tokens with SigLIP, then maps those features into the miniLLM language-embedding space through a Projector composed of LayerNorm, Linear, GELU, and Linear layers. This design reuses existing visual and language capabilities while concentrating learning on the connection between the two modalities.
+
+The implementation is a self-contained subproject with its own model definitions, data processing, trainers, evaluation entry point, and learning materials in both Chinese and English. It targets single-image understanding and reuses reserved tokens as a contiguous image placeholder instead of expanding the tokenizer vocabulary.
+
+### Visual Pretraining
+
+Visual Pretraining uses single-image caption data to establish basic image-text alignment. Both the SigLIP vision encoder and miniLLM Base model remain frozen while only the Projector is trained. Answer errors still backpropagate through the language model to the Projector, gradually adapting mapped visual features to the language model's input space.
+
+![miniLLM-vlm Pretraining curves](miniLLM-vlm/images/pretrain.png)
+
+### Visual SFT
+
+Visual SFT continues from the Pretraining output and covers single-image question answering, multi-turn image-text conversations, and text-only instructions. By default, SigLIP remains frozen while the Projector and the first and last miniLLM decoder blocks are trained, balancing visual instruction following with the language capabilities of the Base model.
+
+![miniLLM-vlm SFT curves](miniLLM-vlm/images/sft.png)
+
+The evaluation path supports image captioning, visual question answering, multi-turn messages, and text-only inference. It also compares the losses from correctly paired and mismatched images as an additional signal for whether the model is actually using visual information.
+
+🚀 [**Try miniLLM-vlm on ModelScope**](https://www.modelscope.cn/studios/kayson2026/miniLLM-vlm)
+
+- [miniLLM-vlm Project Guide](miniLLM-vlm/README.md)
+- [miniLLM-vlm Chinese Learning Materials](miniLLM-vlm/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/)
+- [miniLLM-vlm English Learning Materials](miniLLM-vlm/learning-materials-en/)
+
 ## 📚 Data and Learning Materials
 
-Large training datasets and model weights are not bundled with the repository. Data should be prepared under the dataset directory in the format expected by each stage: text JSONL for pretraining, multi-turn conversations for SFT, preference pairs for DPO, and prompt conversations awaiting generated answers for PPO and GRPO.
+Large training datasets and model weights are not bundled with the repository. Data should be prepared under the relevant dataset directory in the format expected by each stage: text JSONL for language pretraining, multi-turn conversations for SFT, preference pairs for DPO, prompt conversations awaiting generated answers for PPO and GRPO, and Parquet image-conversation data for the VLM.
 
 📦 **Dataset downloads:**
 
@@ -119,6 +149,7 @@ If this is your first time studying language models, the recommended order is:
 3. Learn the differences between dense and MoE models and their optimization methods.
 4. Move on to pretraining, SFT, and reinforcement-learning algorithms.
 5. Use the hands-on guides to complete experiments for each stage.
+6. Continue from the miniLLM Base model to study vision-language alignment and visual SFT.
 
 - [Chinese Learning Materials](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/)
 - [English Learning Materials](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/README.md)
@@ -133,6 +164,7 @@ If this is your first time studying language models, the recommended order is:
 | [eval](eval/) | Tokenizer and model evaluation |
 | [scripts](scripts/) | Corpus extraction, distillation data, validation, and LoRA merging |
 | [images](images/) | Project and training-stage illustrations |
+| [miniLLM-vlm](miniLLM-vlm/) | Vision-language model, training, evaluation, and learning materials built on miniLLM Base |
 
 ## 🧪 Experiment Guidance
 
@@ -142,15 +174,12 @@ If this is your first time studying language models, the recommended order is:
 - PPO and GRPO require additional resources for an external reward model, so training scale should match available memory.
 - Small-model results are highly sensitive to data quality and hyperparameters; prioritize reproducible controlled comparisons.
 
-## 🤝 Contributing
-
-Issues containing questions, suggestions, and experiment results are welcome, as are pull requests improving the implementation, documentation, or data pipeline. If a change affects the architecture, tokenizer, or training behavior, please include reproduction instructions and describe any compatibility impact.
-
 ## 🙏 Acknowledgements
 
-miniLLM is built on knowledge and practice shared by the open-source community. Special thanks go to:
+Special thanks go to:
 
 - [MiniMind](https://github.com/jingyaogong/minimind) — an important reference for end-to-end lightweight language-model training, data processing, preference alignment, and project organization.
+- [MiniMind-V](https://github.com/jingyaogong/minimind-v) — an important reference for connecting a vision encoder to a lightweight language model, cross-modal alignment, and visual SFT.
 - [nanoGPT](https://github.com/karpathy/nanoGPT) — a clear and concise demonstration of GPT training and fine-tuning that continues to inspire the idea of understanding models through readable code.
 
 We also thank the contributors to PyTorch, Hugging Face Transformers, Hugging Face Datasets, open datasets, and the broader research community.
