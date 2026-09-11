@@ -3,7 +3,7 @@
 ![miniLLM](images/minillm-banner.png)
 
 
-### Build and train a small language model from scratch
+### Learn to train large language models from scratch
 
 [中文](README.md) | English
 

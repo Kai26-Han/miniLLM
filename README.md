@@ -3,7 +3,7 @@
 ![miniLLM](images/minillm-banner.png)
 
 
-### 学习从 0 构建一个小型语言模型
+### 学习从 0 训练大模型
 
 中文 | [English](README_en.md)
 
