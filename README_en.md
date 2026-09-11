@@ -23,11 +23,19 @@ The project aims to turn language models from black boxes that can merely be cal
 
 miniLLM pairs its implementation with Chinese and English theory articles and practical guides. Every training stage is intended to be readable, reproducible, comparable, and extensible.
 
+Learning materials:
+
+- Concepts · What an LLM is and why a base model is not an assistant ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E8%AE%A4%E7%9F%A5%E7%AF%87/LLM%E5%85%A5%E9%97%A8%EF%BC%9A%E4%BB%8E%E2%80%9C%E4%BA%92%E8%81%94%E7%BD%91%E5%8E%8B%E7%BC%A9%E5%8C%85%E2%80%9D%E5%88%B0%E6%96%B0%E5%9E%8BOS.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Concepts/Introduction%20to%20LLMs%20-%20From%20an%20Internet%20Archive%20to%20a%20New%20OS.md))
+
 ## 🖥️ Start with One GPU, Learn by Training
 
 **This project is trained on a single NVIDIA GeForce RTX 4090 GPU.** You do not need to start with a multi-GPU cluster to gain hands-on experience with language-model training and understand how data, model architecture, and parameter updates work together.
 
 miniLLM aims to lower the compute barrier to hands-on learning: start with a small dataset and a short training run, then scale up gradually. Memory requirements and runtime vary by stage, so adjust batch size, sequence length, and sampling scale to your resources. Single-GPU training does not mean every stage runs unchanged with its default configuration or that full training has no time cost.
+
+Learning materials:
+
+- Architecture · Compute, memory, and training-efficiency trade-offs ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/LLM%20Optimization%20Methods%20Explained.md))
 
 ## ✨ What Is Included
 
@@ -59,6 +67,10 @@ Training changes numerical model parameters, also called weights. A typical upda
 
 An epoch is one pass through the training set. Gradient accumulation processes several small batches before a single update, so the number of batches need not equal the number of optimizer steps. Lower training loss shows better fit to the training objective; validation and actual responses are still needed to assess capability.
 
+Learning materials:
+
+- Concepts · Connect data, training, and inference ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E8%AE%A4%E7%9F%A5%E7%AF%87/LLM%E5%85%A8%E6%A0%88%E5%8E%9F%E7%90%86%EF%BC%9A%E4%BB%8E%E6%95%B0%E6%8D%AE%E3%80%81%E8%AE%AD%E7%BB%83%E5%88%B0%E6%8E%A8%E7%90%86.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Concepts/Full-Stack%20LLM%20Fundamentals%20-%20From%20Data%20and%20Training%20to%20Inference.md))
+
 ## 🧠 Model Architecture
 
 miniLLM is an autoregressive decoder-only causal language model. Sparse MoE is enabled by default, while a dense variant is retained for controlled comparisons.
@@ -82,6 +94,10 @@ miniLLM is an autoregressive decoder-only causal language model. Sparse MoE is e
 
 The maximum position configuration only defines the position-index range accepted by the model. Reliable long-context performance still depends on the sequence lengths, data distribution, and evaluation results used during training.
 
+Learning materials:
+
+- Architecture · Decoder blocks, normalization, positional encoding, and output layers ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/Overall%20LLM%20Architecture%20Explained.md))
+
 ### How Text Passes Through the Model
 
 **Text → Tokenizer → Token Embedding → 8 decoder layers → final RMSNorm → LM Head → next-token probabilities.**
@@ -97,6 +113,12 @@ Embeddings turn discrete IDs into numerical vectors. Each decoder layer first re
 | Shared Embedding / LM Head | Ties input embeddings to the output vocabulary projection to reduce parameter count |
 
 The default MoE has 4 experts per layer and activates 1 per token. An auxiliary load-balancing objective encourages more even expert use. About 65.3M active parameters describe the per-token computation; all roughly 199.8M parameters still need to be stored. Weight and optimizer memory do not shrink in proportion to expert activation.
+
+Learning materials:
+
+- Fundamentals · Understand Transformers by building GPT from scratch ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0GPT%EF%BC%9ALLM%E4%B8%8E%20Transformer.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/Implementing%20GPT%20from%20Scratch%20-%20LLMs%20and%20Transformers.md))
+- Architecture · QKV, causal masking, and GQA ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E8%87%AA%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/Self-Attention%20Explained.md))
+- Architecture · Expert routing, load balancing, and active parameters in Dense and MoE models ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/Dense%E4%B8%8EMoE%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/Dense%20and%20MoE%20Explained.md))
 
 ## 🗺️ End-to-End Training Path
 
@@ -143,6 +165,11 @@ BPE can combine frequent pieces into longer tokens and represent less common con
 
 Start by checking that Chinese, English, and symbols survive an encode/decode round trip, then compare the token counts for the same text. The output is the tokenizer used throughout subsequent language-model training.
 
+Learning materials:
+
+- Fundamentals · Tokenization from Unicode and UTF-8 to BPE merges ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/Tokenizer%EF%BC%9A%E4%BB%8EUnicode%E5%88%B0BPE.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/Tokenizer%20-%20From%20Unicode%20to%20BPE.md))
+- Algorithms · Tokenizer algorithms, vocabulary trade-offs, and evaluation ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/Tokenizer%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/Tokenizer%20Algorithms%20Explained.md))
+
 Hands-on guides: [中文 · 训练 Tokenizer](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/%E8%AE%AD%E7%BB%83Tokenizer.md) · [English · Training a Tokenizer](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/Training%20a%20Tokenizer.md).
 
 ![miniLLM Tokenizer](images/tokenizer.png)
@@ -161,6 +188,10 @@ For an illustrative token sequence “The / sky / is / blue”, successive posit
 
 This stage updates all language-model parameters and produces a Base model focused on text continuation. Check validation language loss, perplexity, and generated continuations. Perplexity measures language prediction and should exclude the router auxiliary loss.
 
+Learning materials:
+
+- Algorithms · Pretraining objectives, data sampling, AdamW, and learning-rate schedules ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/LLM%20%E9%A2%84%E8%AE%AD%E7%BB%83%E9%98%B6%E6%AE%B5%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/LLM%20Pretraining%20Algorithms%20Explained.md))
+
 Hands-on guides: [中文 · miniLLM 预训练](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/miniLLM%20%E9%A2%84%E8%AE%AD%E7%BB%83.md) · [English · miniLLM Pretraining](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/miniLLM%20Pretraining.md).
 
 ![miniLLM Pretraining](images/pretrain.png)
@@ -178,6 +209,11 @@ Supervised fine-tuning teaches the base model to interpret user requests and pro
 SFT still predicts the next token, but changes the organization of the data and the supervised positions. The model reads user questions and message history while treating assistant outputs as the target behavior. Training supplies the correct answer prefix for each next-token prediction; live conversation uses the model's own generated prefix. Both settings need to be checked.
 
 The output is an instruction model. Inspect answer-token masks and whether truncation removes important answers, then compare Base and SFT responses on a fixed set of new questions. Alongside validation loss, look for irrelevant responses, repetition, or failure to stop.
+
+Learning materials:
+
+- Fundamentals · Understand the roles of SFT, LoRA, QLoRA, and distillation ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/Fine-tuning%E6%96%B9%E6%A1%88.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/Fine-Tuning%20Approaches.md))
+- Algorithms · SFT loss masks, chat templates, and data organization ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/LLM%20SFT%E9%98%B6%E6%AE%B5%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/LLM%20SFT%20Algorithms%20Explained.md))
 
 Hands-on guides: [中文 · miniLLM SFT 训练](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/miniLLM%20SFT%E8%AE%AD%E7%BB%83.md) · [English · miniLLM SFT Training](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/miniLLM%20SFT%20Training.md).
 
@@ -204,6 +240,11 @@ The output is a distilled miniLLM instruction model. Inspect teacher answers for
 Hands-on guides: [中文 · miniLLM 黑盒蒸馏](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/miniLLM%20%E9%BB%91%E7%9B%92%E8%92%B8%E9%A6%8F.md) · [English · miniLLM Black-Box Distillation](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/miniLLM%20Black-Box%20Distillation.md).
 
 ## 🏆 Preference Alignment and Reinforcement Learning
+
+Learning materials:
+
+- Fundamentals · Preference data, rewards, and alignment approaches ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/RLHF%E6%96%B9%E6%A1%88.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/RLHF%20Approaches.md))
+- Algorithms · PPO, GRPO, advantage estimation, policy constraints, and how DPO differs ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/LLM%20RL%E9%98%B6%E6%AE%B5%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/LLM%20RL%20Algorithms%20Explained.md))
 
 ### DPO: Learn Which Answer to Prefer
 
@@ -266,11 +307,19 @@ Hands-on guides: [中文 · miniLLM Agentic RL 训练](%E5%AD%A6%E4%B9%A0%E8%B5%
 
 The implementation is a self-contained subproject with its own model definitions, data processing, trainers, evaluation entry point, and learning materials in both Chinese and English. It targets single-image understanding and reuses reserved tokens as a contiguous image placeholder instead of expanding the tokenizer vocabulary.
 
+Learning materials:
+
+- Concepts · What a vision-language model adds to an LLM ([中文](miniLLM-vlm/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/%E8%AE%A4%E7%9F%A5%E7%AF%87/VLM%E6%9E%84%E5%BB%BA%E6%96%B9%E6%B3%95.md) · [English](miniLLM-vlm/learning-materials-en/concepts/Building-Vision-Language-Models.md))
+
 ### How Images Enter the Language Model
 
 **Image → frozen SigLIP → 64 visual vectors → Projector; question → tokenizer → text vectors; combine the vectors in sequence → miniLLM → answer.**
 
 A 256 × 256 image with 32 × 32 patches forms an 8 × 8 grid. The vision encoder produces a feature vector at each position. Projected vectors replace embeddings at image-placeholder positions and share the same context with text. Visual tokens occupy sequence positions but are not answer words to predict.
+
+Learning materials:
+
+- Architecture · Vision encoders, projectors, and staged VLM training ([中文](miniLLM-vlm/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/%E6%9E%B6%E6%9E%84%E7%AF%87/VLM%E6%9E%B6%E6%9E%84%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95.md) · [English](miniLLM-vlm/learning-materials-en/architecture/VLM-Architecture-and-Training.md))
 
 ### Visual Pretraining
 
@@ -315,6 +364,8 @@ Large training datasets and model weights are not bundled with the repository. D
 - [ModelScope · miniLLM-dataset](https://www.modelscope.cn/datasets/kayson2026/miniLLM-dataset/files)
 - [Hugging Face · miniLLM-dataset](https://huggingface.co/datasets/fenglike/miniLLM-dataset/tree/main)
 
+The learning-material links next to each topic provide paired Chinese and English explanations; the hands-on links lead to the corresponding training walkthroughs. Theory articles also discuss general industry approaches, so they do not imply that every method is implemented in miniLLM.
+
 If this is your first time studying language models, the recommended order is:
 
 1. Build a high-level understanding of LLMs and the full lifecycle.
@@ -353,6 +404,10 @@ The images on this page record training progress. Identify the metric and stage 
 | Gradients become NaN / Inf or loss spikes | Possible numerical, data, or update problem | Samples, precision, learning rate, and gradient clipping |
 
 Start with a small experiment, fix validation questions and random seeds, and change one main variable at a time. This makes it easier to explain why results changed and connect the training ideas above to actual observations.
+
+Learning materials:
+
+- Architecture · Evaluation beyond loss: perplexity, generation quality, and data leakage ([中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E5%A4%A7%E6%A8%A1%E5%9E%8BEval%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/LLM%20Evaluation%20Methods%20Explained.md))
 
 ## 🧪 Experiment Guidance
 

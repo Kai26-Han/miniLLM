@@ -23,11 +23,19 @@ miniLLM 是一个面向 LLM 入门、实验与原理学习的项目。
 
 项目不只提供训练脚本，还配套了中英文原理文章和实战资料，希望让每一个训练阶段都能被阅读、复现、比较和扩展。
 
+学习资料：
+
+- 认知篇 · LLM 入门：模型是什么、为什么 Base 不是助手（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E8%AE%A4%E7%9F%A5%E7%AF%87/LLM%E5%85%A5%E9%97%A8%EF%BC%9A%E4%BB%8E%E2%80%9C%E4%BA%92%E8%81%94%E7%BD%91%E5%8E%8B%E7%BC%A9%E5%8C%85%E2%80%9D%E5%88%B0%E6%96%B0%E5%9E%8BOS.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Concepts/Introduction%20to%20LLMs%20-%20From%20an%20Internet%20Archive%20to%20a%20New%20OS.md)）
+
 ## 🖥️ 单卡起步，动手学习大模型训练
 
 **本项目使用单张 NVIDIA GeForce RTX 4090 进行训练。** 不必从多卡集群起步，也能亲手实践语言模型训练，理解数据、模型结构与参数更新之间的关系。
 
 miniLLM 希望降低的是实操学习的算力门槛：先用小数据集和短训练跑通流程，再逐步扩大实验。各阶段的显存与耗时不同，仍需按可用资源调整批量大小、序列长度和采样规模；单卡训练不代表所有阶段都能直接使用默认配置，也不代表完整训练没有时间成本。
+
+学习资料：
+
+- 架构篇 · 大模型优化：理解算力、显存与训练效率的取舍（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/LLM%20Optimization%20Methods%20Explained.md)）
 
 ## ✨ 项目包含什么
 
@@ -59,6 +67,10 @@ miniLLM 希望降低的是实操学习的算力门槛：先用小数据集和短
 
 一个 Epoch 是遍历一轮训练集。梯度累积允许分几次读取小 Batch、再合并更新一次，所以读取数据的次数不一定等于优化器更新次数。训练 Loss 下降只说明模型更适应训练目标，还需要验证集和实际问答来判断能力。
 
+学习资料：
+
+- 认知篇 · LLM 全栈原理：串起数据、训练与推理（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E8%AE%A4%E7%9F%A5%E7%AF%87/LLM%E5%85%A8%E6%A0%88%E5%8E%9F%E7%90%86%EF%BC%9A%E4%BB%8E%E6%95%B0%E6%8D%AE%E3%80%81%E8%AE%AD%E7%BB%83%E5%88%B0%E6%8E%A8%E7%90%86.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Concepts/Full-Stack%20LLM%20Fundamentals%20-%20From%20Data%20and%20Training%20to%20Inference.md)）
+
 ## 🧠 模型架构
 
 miniLLM 是一个自回归 Decoder-only Causal Language Model。模型默认采用稀疏 MoE，同时保留 Dense 对照实验能力。
@@ -82,6 +94,10 @@ miniLLM 是一个自回归 Decoder-only Causal Language Model。模型默认采�
 
 最大位置配置只表示模型可接受的位置索引范围。模型是否真正具备可靠的长上下文能力，仍取决于训练时的序列长度、数据分布和评测结果。
 
+学习资料：
+
+- 架构篇 · 整体架构：理解 Decoder、归一化、位置编码与输出层（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/Overall%20LLM%20Architecture%20Explained.md)）
+
 ### 一段文字如何通过模型
 
 **文本 → Tokenizer → Token Embedding → 8 层 Decoder → 最终 RMSNorm → LM Head → 下一个 Token 的概率。**
@@ -97,6 +113,12 @@ Embedding 把离散编号变成可计算的向量。每个 Decoder 层先让 Tok
 | 共享 Embedding / LM Head | 输入词嵌入与输出词表投影共享权重，减少参数量 |
 
 默认 MoE 每层有 4 个 Expert，每个 Token 激活其中 1 个。专家负载均衡辅助项鼓励更均衡的使用。约 65.3M 激活参数描述单 Token 的参与计算范围，所有约 199.8M 参数仍需保存；MoE 不会按激活比例缩减权重和优化器内存。
+
+学习资料：
+
+- 基础篇 · 从零实现 GPT：从最小语言模型理解 Transformer（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0GPT%EF%BC%9ALLM%E4%B8%8E%20Transformer.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/Implementing%20GPT%20from%20Scratch%20-%20LLMs%20and%20Transformers.md)）
+- 架构篇 · 自注意力：理解 QKV、因果遮罩与 GQA（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E8%87%AA%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/Self-Attention%20Explained.md)）
+- 架构篇 · Dense 与 MoE：理解专家路由、负载均衡与激活参数（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/Dense%E4%B8%8EMoE%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/Dense%20and%20MoE%20Explained.md)）
 
 ## 🗺️ 完整训练路线
 
@@ -143,6 +165,11 @@ BPE 可以把常见片段合并成较长的 Token，较少出现的内容则拆�
 
 实操时先检查中文、英文和符号能否编码后还原，再比较同一段文字需要多少 Token。产物是后续所有语言训练阶段共同使用的 Tokenizer 文件。
 
+学习资料：
+
+- 基础篇 · Tokenizer：从 Unicode、UTF-8 到 BPE 合并（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/Tokenizer%EF%BC%9A%E4%BB%8EUnicode%E5%88%B0BPE.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/Tokenizer%20-%20From%20Unicode%20to%20BPE.md)）
+- 算法篇 · Tokenizer：比较分词算法、词表取舍与评估方法（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/Tokenizer%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/Tokenizer%20Algorithms%20Explained.md)）
+
 实战参考：[中文 · 训练 Tokenizer](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/%E8%AE%AD%E7%BB%83Tokenizer.md) · [English · Training a Tokenizer](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/Training%20a%20Tokenizer.md)。
 
 ![miniLLM Tokenizer](images/tokenizer.png)
@@ -161,6 +188,10 @@ Tokenizer 一旦进入预训练阶段，词表映射和特殊 Token ID 就应保
 
 这一阶段更新全部语言模型参数，产物是 Base 模型，主要学习续写能力。实际检查时关注验证集语言损失、困惑度和文本续写；困惑度只衡量语言预测，不应把 Router 辅助损失加进去。
 
+学习资料：
+
+- 算法篇 · 预训练：理解训练目标、数据采样、AdamW 与学习率调度（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/LLM%20%E9%A2%84%E8%AE%AD%E7%BB%83%E9%98%B6%E6%AE%B5%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/LLM%20Pretraining%20Algorithms%20Explained.md)）
+
 实战参考：[中文 · miniLLM 预训练](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/miniLLM%20%E9%A2%84%E8%AE%AD%E7%BB%83.md) · [English · miniLLM Pretraining](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/miniLLM%20Pretraining.md)。
 
 ![miniLLM Pretraining](images/pretrain.png)
@@ -178,6 +209,11 @@ SFT 让基础模型学会理解用户输入并给出结构化回答。miniLLM �
 同样是预测下一个 Token，SFT 改变的是数据组织方式与监督位置：模型能读取用户问题和历史消息，但只把 assistant 输出当作需要模仿的答案。训练时提供真实答案前缀来预测下一 Token；实际对话时则使用模型自己已生成的回答作为前缀，两种情况应分别检查。
 
 产物是指令模型。实操时检查答案 Token 是否被正确标记、长对话是否截断掉关键答案，并在固定的一组新问题上比较 Base 与 SFT 的响应。验证 Loss 之外，也要看是否答非所问、重复或不能正确结束。
+
+学习资料：
+
+- 基础篇 · Fine-tuning 方案：区分 SFT、LoRA、QLoRA 与蒸馏（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/Fine-tuning%E6%96%B9%E6%A1%88.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/Fine-Tuning%20Approaches.md)）
+- 算法篇 · SFT：理解 Loss Mask、Chat Template 与数据组织（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/LLM%20SFT%E9%98%B6%E6%AE%B5%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/LLM%20SFT%20Algorithms%20Explained.md)）
 
 实战参考：[中文 · miniLLM SFT 训练](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/miniLLM%20SFT%E8%AE%AD%E7%BB%83.md) · [English · miniLLM SFT Training](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/miniLLM%20SFT%20Training.md)。
 
@@ -204,6 +240,11 @@ LoRA 是参数更新方式，可以用于 SFT，并不是 SFT 之后必经的新
 实战参考：[中文 · miniLLM 黑盒蒸馏](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%AE%9E%E6%88%98%E7%AF%87/miniLLM%20%E9%BB%91%E7%9B%92%E8%92%B8%E9%A6%8F.md) · [English · miniLLM Black-Box Distillation](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Hands-On/miniLLM%20Black-Box%20Distillation.md)。
 
 ## 🏆 偏好对齐与强化学习
+
+学习资料：
+
+- 基础篇 · RLHF 方案：理解偏好数据、奖励与对齐方法的选择（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E5%9F%BA%E7%A1%80%E7%AF%87/RLHF%E6%96%B9%E6%A1%88.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Fundamentals/RLHF%20Approaches.md)）
+- 算法篇 · RL：深入 PPO、GRPO、优势估计与策略约束，并区分 DPO（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E7%AE%97%E6%B3%95%E7%AF%87/LLM%20RL%E9%98%B6%E6%AE%B5%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Algorithms/LLM%20RL%20Algorithms%20Explained.md)）
 
 ### DPO：学习同一个问题的回答偏好
 
@@ -266,11 +307,19 @@ GRPO 用这一组回答的平均奖励和标准差计算相对优势，省去独
 
 项目是一个可独立运行的子项目，包含自己的模型定义、数据处理、训练器、评估入口和中英文学习资料。它面向单图理解，不扩充 Tokenizer 词表，而是复用保留 Token 作为连续的图像占位。
 
+学习资料：
+
+- 认知篇 · VLM 构建方法：理解视觉语言模型比 LLM 多了什么（[中文](miniLLM-vlm/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/%E8%AE%A4%E7%9F%A5%E7%AF%87/VLM%E6%9E%84%E5%BB%BA%E6%96%B9%E6%B3%95.md) · [English](miniLLM-vlm/learning-materials-en/concepts/Building-Vision-Language-Models.md)）
+
 ### 图像怎样进入语言模型
 
 **图片 → 冻结 SigLIP → 64 个视觉向量 → Projector 映射；问题文本 → Tokenizer → 文字向量；两路向量按序组合 → miniLLM → 回答。**
 
 256 × 256 图像按 32 × 32 Patch 形成 8 × 8 网格。视觉编码器输出的每个向量表示一个位置的视觉特征；它们经 Projector 后替换图像占位位置的 Embedding，与文本共享同一上下文。视觉 Token 占据序列长度，但不对应要预测的答案文字。
+
+学习资料：
+
+- 架构篇 · VLM 架构与训练：理解视觉编码器、Projector 与分阶段训练（[中文](miniLLM-vlm/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/%E6%9E%B6%E6%9E%84%E7%AF%87/VLM%E6%9E%B6%E6%9E%84%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95.md) · [English](miniLLM-vlm/learning-materials-en/architecture/VLM-Architecture-and-Training.md)）
 
 ### 视觉 Pretrain
 
@@ -315,6 +364,8 @@ GRPO 用这一组回答的平均奖励和标准差计算相对优势，省去独
 - [ModelScope · miniLLM-dataset](https://www.modelscope.cn/datasets/kayson2026/miniLLM-dataset/files)
 - [Hugging Face · miniLLM-dataset](https://huggingface.co/datasets/fenglike/miniLLM-dataset/tree/main)
 
+各章节旁的“学习资料”提供中英文原理讲解，“实战参考”则通向对应训练操作。原理文章也涵盖业界通用方案，不代表文中所有方法都已在 miniLLM 中实现。
+
 如果是第一次学习 LLM，建议按以下顺序阅读：
 
 1. 先建立对 LLM 与全流程的整体认知。
@@ -353,6 +404,10 @@ GRPO 用这一组回答的平均奖励和标准差计算相对优势，省去独
 | 梯度出现 NaN / Inf，或 Loss 突增 | 可能有数值、数据或更新异常 | 样本、精度、学习率和梯度裁剪 |
 
 从一个小规模实验开始，固定验证问题和随机种子，每次只改一个主要变量。这样能解释“为什么结果变了”，也更容易把 README 中的训练思路与实际观察对应起来。
+
+学习资料：
+
+- 架构篇 · 模型评估：从 Loss、困惑度到生成质量与评测泄漏（[中文](%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%20-%20%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BALLM/%E6%9E%B6%E6%9E%84%E7%AF%87/%E5%A4%A7%E6%A8%A1%E5%9E%8BEval%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90.md) · [English](Learning%20Materials%20-%20Building%20an%20LLM%20from%20Scratch/Architecture/LLM%20Evaluation%20Methods%20Explained.md)）
 
 ## 🧪 实验建议
 
