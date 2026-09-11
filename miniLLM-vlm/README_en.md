@@ -50,18 +50,60 @@ miniLLM-vlm uses a modular, input-level multimodal fusion design. An image is fi
 
 The goal of this design is not to retrain the vision and language backbones from scratch, but to learn a stable connection between two existing representation spaces. During generation, the image is encoded only once in the prefill stage, while subsequent token generation reuses miniLLM's KV cache.
 
+## 🧩 How an Image Becomes an Answer
+
+For a beginner, miniLLM-vlm can be understood as an image reader, a translator, and a language model working together. An image passes through the following steps before an answer is generated:
+
+1. **Image preprocessing:** The image is converted to 256 × 256 pixels and normalized as required by SigLIP.
+2. **Visual feature extraction:** SigLIP divides the image into an 8 × 8 grid of patches and produces one feature vector for each patch, resulting in 64 visual tokens.
+3. **Cross-modal translation:** The Projector converts SigLIP's visual features into the language-embedding space used by miniLLM. It acts like a translator that allows two pretrained models to communicate.
+4. **Multimodal sequence construction:** The image placeholders in the text are replaced with 64 visual embeddings, which are placed in the same sequence as the user's question and conversation history.
+5. **Text generation:** miniLLM reads the visual embeddings and text tokens together, then predicts subsequent tokens one at a time just like an ordinary language model.
+
+| Concept | Intuitive meaning |
+| --- | --- |
+| Visual token | A numerical representation of a small image region rather than a piece of text |
+| Projector | A connector that translates the language of visual features into miniLLM's embedding language |
+| Image placeholder | Marks where visual features should be inserted into the text sequence |
+| Teacher forcing | Provides the correct answer prefix during training so the model can learn to predict the next token |
+| Backpropagation | Traces prediction errors backward to identify which trainable parameters should change |
+
 ## 🗺️ Two-Stage Training
+
+The relationship between the stages can be understood with a simple analogy: Visual Pretraining first teaches the Projector to translate images, and Visual SFT then teaches the assistant how to use those images to answer a user's request. Aligning the modalities before learning tasks avoids making large changes to the language model immediately with a relatively small visual dataset.
 
 | Stage | Training data | Default trainable parameters | Objective |
 | --- | --- | --- | --- |
 | Visual Pretraining | Single-image captions | Projector | Establish basic alignment between image features and language embeddings |
 | Visual SFT | Single-image question answering, multi-turn image-text conversations, and text-only instructions | Projector and the first and last miniLLM decoder blocks | Learn visual instruction following and multi-turn conversation |
 
+| Component | Visual Pretraining | Default Visual SFT strategy | Rationale |
+| --- | --- | --- | --- |
+| SigLIP | Frozen | Frozen | Preserve learned visual representations while reducing memory and compute |
+| Projector | Trainable | Trainable | Continue learning the mapping between visual and language spaces |
+| miniLLM Base | Frozen | First and last decoder blocks are trainable | Protect language ability during Pretraining, then allow part of the language model to adapt to visual instructions during SFT |
+| Tokenizer | Fixed | Fixed | Preserve the correspondence between Base-model weights and token IDs |
+
+Before any parameters are updated, the trainer performs resource preflight checks. It confirms that the Base weights match the tokenizer, SigLIP produces the expected shapes, images can be decoded, conversations are valid, and only the parameters allowed by the current stage receive gradients. The preflight does not update the model; it is designed to expose resource or data problems before a long training run begins.
+
 ### 🚀 Visual Pretraining
 
 Visual Pretraining starts from a trained miniLLM Base model and SigLIP. Both backbones remain frozen while only the Projector is updated. Although miniLLM's parameters do not change, answer errors still propagate through the language model back to the Projector, gradually turning the mapped visual features into inputs that miniLLM can understand.
 
+**How one caption sample is trained:**
+
+1. SigLIP converts the image into 64 fixed visual features.
+2. The randomly initialized Projector maps them to miniLLM's embedding dimension.
+3. The mapped image embeddings are passed to miniLLM together with a prompt such as a request to describe the image.
+4. Teacher forcing supplies the reference caption, and the model predicts the next token at every answer position.
+5. Differences between the prediction and reference answer form the cross-entropy loss. Gradients pass through the frozen miniLLM and flow back to the Projector.
+6. The optimizer updates only the Projector; the SigLIP and miniLLM weights remain unchanged.
+
+**How can a frozen miniLLM still help the Projector learn?** Freezing means that miniLLM's parameters are not updated; it does not disconnect the mathematical computation graph. miniLLM still participates in the forward pass and gradient propagation, so it can tell the Projector what kinds of mapped inputs make the correct caption easier to generate.
+
 The default configuration uses BF16 for one epoch with a maximum sequence length of 512 tokens. The micro-batch size is 8, with 8 accumulation steps for an effective batch size of 64. The training objective combines image-caption cross-entropy with miniLLM's MoE router auxiliary term.
+
+This stage primarily learns what is present in an image rather than complex user intent. In a successful run, validation loss should improve, and the loss for the correct image should be lower than for a mismatched image. This helps show that the model is using visual information instead of guessing from the text prompt alone.
 
 ![miniLLM-vlm Visual Pretraining curves](images/pretrain.png)
 
@@ -71,7 +113,19 @@ The default configuration uses BF16 for one epoch with a maximum sequence length
 
 Visual SFT inherits the Projector learned during Pretraining and uses images, questions, and ideal answers to learn specific task behavior. The default strategy freezes SigLIP and the middle miniLLM layers while training the Projector and the complete first and last decoder blocks of the language model.
 
+**How one SFT sample is trained:**
+
+1. The data loader reads the image and complete conversation, distinguishing user messages from assistant messages.
+2. For an image-text sample, SigLIP and the Projector produce visual embeddings. A text-only sample follows the original language path directly.
+3. System messages, user messages, the image, and prior answers form the context used to understand the current task.
+4. Only the assistant's answer text and real end token contribute to the supervised loss. Prompts and image positions are not treated as answers to memorize.
+5. Gradients update both the Projector and the first and last miniLLM layers, adapting how visual inputs are received and how final answers are organized.
+
+**Why are only the first and last layers unfrozen by default?** The first layer is close to the multimodal input, while the last layer is close to the answer output. Allowing them to adapt while freezing the middle layers is a compromise among task adaptation, language-capability retention, and memory use. It is not the only valid freezing strategy, so the project also retains full fine-tuning and Projector-only options for comparison.
+
 The project also retains two comparison strategies: full language-model fine-tuning and Projector-only training. The default SFT configuration uses BF16 for one epoch with a maximum sequence length of 768 tokens. The micro-batch size is 4, with 16 accumulation steps for the same effective batch size of 64.
+
+This stage no longer learns only generic captions. It learns which evidence to read from an image for the current question and how to format the answer. Evaluation should therefore examine fixed-question generations, image-text and text-only grouped metrics, and whether the original language ability remains intact as visual performance improves, in addition to the loss curve.
 
 ![miniLLM-vlm Visual SFT curves](images/sft.png)
 
