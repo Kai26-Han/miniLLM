@@ -23,6 +23,12 @@ The project aims to turn language models from black boxes that can merely be cal
 
 miniLLM pairs its implementation with Chinese and English theory articles and practical guides. Every training stage is intended to be readable, reproducible, comparable, and extensible.
 
+## 🖥️ Start with One GPU, Learn by Training
+
+**This project is trained on a single NVIDIA GeForce RTX 4090 GPU.** You do not need to start with a multi-GPU cluster to gain hands-on experience with language-model training and understand how data, model architecture, and parameter updates work together.
+
+miniLLM aims to lower the compute barrier to hands-on learning: start with a small dataset and a short training run, then scale up gradually. Memory requirements and runtime vary by stage, so adjust batch size, sequence length, and sampling scale to your resources. Single-GPU training does not mean every stage runs unchanged with its default configuration or that full training has no time cost.
+
 ## ✨ What Is Included
 
 - An 8,192-token ByteLevel-BPE tokenizer that can be trained from scratch
@@ -347,10 +353,6 @@ The images on this page record training progress. Identify the metric and stage 
 | Gradients become NaN / Inf or loss spikes | Possible numerical, data, or update problem | Samples, precision, learning rate, and gradient clipping |
 
 Start with a small experiment, fix validation questions and random seeds, and change one main variable at a time. This makes it easier to explain why results changed and connect the training ideas above to actual observations.
-
-## 🖥️ Training Hardware
-
-This project is trained on a single NVIDIA GeForce RTX 4090 GPU.
 
 ## 🧪 Experiment Guidance
 
