@@ -348,6 +348,10 @@ The images on this page record training progress. Identify the metric and stage 
 
 Start with a small experiment, fix validation questions and random seeds, and change one main variable at a time. This makes it easier to explain why results changed and connect the training ideas above to actual observations.
 
+## 🖥️ Training Hardware
+
+This project is trained on a single NVIDIA GeForce RTX 4090 GPU.
+
 ## 🧪 Experiment Guidance
 
 - Validate the complete pipeline with a small dataset and a short run before scaling up.
